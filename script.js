@@ -6,77 +6,97 @@ class VampireRemote {
             isMuted: false,
             currentChannel: 1,
             currentSource: 'TV',
-            currentApp: null
+            currentApp: null,
+            connectionStatus: 'disconnected'
         };
 
         this.sources = ['TV', 'HDMI1', 'HDMI2', 'AV', 'Component'];
         this.apps = ['Netflix', 'Prime Video', 'YouTube', 'Disney+'];
+
+        this.MAX_VOLUME = 100;
+        this.MIN_VOLUME = 0;
 
         this.initializeEventListeners();
         this.updateUI();
     }
 
     initializeEventListeners() {
-        // Power Button
-        document.querySelector('[data-action="power"]').addEventListener('click', () => this.togglePower());
+        try {
+            // Power Button
+            this.addEventListenerSafely('[data-action="power"]', 'click', () => this.togglePower());
 
-        // Volume Controls
-        document.querySelector('[data-action="volume-up"]').addEventListener('click', () => this.adjustVolume('up'));
-        document.querySelector('[data-action="volume-down"]').addEventListener('click', () => this.adjustVolume('down'));
-        document.querySelector('[data-action="mute"]').addEventListener('click', () => this.toggleMute());
+            // Volume Controls
+            this.addEventListenerSafely('[data-action="volume-up"]', 'click', () => this.adjustVolume('up'));
+            this.addEventListenerSafely('[data-action="volume-down"]', 'click', () => this.adjustVolume('down'));
+            this.addEventListenerSafely('[data-action="mute"]', 'click', () => this.toggleMute());
 
-        // Channel Controls
-        document.querySelector('[data-action="channel-up"]').addEventListener('click', () => this.changeChannel('up'));
-        document.querySelector('[data-action="channel-down"]').addEventListener('click', () => this.changeChannel('down'));
-        
-        // Numeric Keypad Event Listeners
-        this.setupNumericKeypad();
+            // Channel Controls
+            this.addEventListenerSafely('[data-action="channel-up"]', 'click', () => this.changeChannel('up'));
+            this.addEventListenerSafely('[data-action="channel-down"]', 'click', () => this.changeChannel('down'));
+            
+            // Numeric Keypad Event Listeners
+            this.setupNumericKeypad();
 
-        // Navigation Controls
-        const navButtons = ['up', 'down', 'left', 'right', 'ok'];
-        navButtons.forEach(direction => {
-            document.querySelector(`[data-action="${direction}"]`).addEventListener('click', 
-                () => this.navigate(direction)
+            // Navigation Controls
+            const navButtons = ['up', 'down', 'left', 'right', 'ok'];
+            navButtons.forEach(direction => {
+                this.addEventListenerSafely(`[data-action="${direction}"]`, 'click', 
+                    () => this.navigate(direction)
+                );
+            });
+
+            // Menu and Settings
+            const menuButtons = ['home', 'back', 'menu', 'settings'];
+            menuButtons.forEach(action => {
+                this.addEventListenerSafely(`[data-action="${action}"]`, 'click', 
+                    () => this[action]()
+                );
+            });
+
+            // Media Controls
+            const mediaButtons = ['play-pause', 'stop', 'rewind', 'forward'];
+            mediaButtons.forEach(action => {
+                this.addEventListenerSafely(`[data-action="${action}"]`, 'click', 
+                    () => this.mediaControl(action)
+                );
+            });
+
+            // Source Selection
+            this.addEventListenerSafely('#sourceInput', 'change', (e) => 
+                this.changeSource(e.target.value)
             );
-        });
 
-        // Menu and Settings
-        const menuButtons = ['home', 'back', 'menu', 'settings'];
-        menuButtons.forEach(action => {
-            document.querySelector(`[data-action="${action}"]`).addEventListener('click', 
-                () => this[action]()
-            );
-        });
+            // Special Features
+            const specialFeatures = ['smart-hub', 'guide', 'info', 'tools'];
+            specialFeatures.forEach(feature => {
+                this.addEventListenerSafely(`[data-action="${feature}"]`, 'click', 
+                    () => this.specialFeature(feature)
+                );
+            });
 
-        // Media Controls
-        const mediaButtons = ['play-pause', 'stop', 'rewind', 'forward'];
-        mediaButtons.forEach(action => {
-            document.querySelector(`[data-action="${action}"]`).addEventListener('click', 
-                () => this.mediaControl(action)
-            );
-        });
+            // App Control
+            this.apps.forEach(app => {
+                const selector = `[data-action="${app.toLowerCase().replace(' ', '-')}"]`;
+                this.addEventListenerSafely(selector, 'click', 
+                    () => this.launchApp(app)
+                );
+            });
 
-        // Source Selection
-        document.getElementById('sourceInput').addEventListener('change', (e) => 
-            this.changeSource(e.target.value)
-        );
+            // Keyboard support
+            window.addEventListener('keydown', this.handleKeyboardShortcuts.bind(this));
+        } catch (error) {
+            console.error('Error setting up event listeners:', error);
+            this.showErrorNotification('Failed to initialize remote controls');
+        }
+    }
 
-        // Special Features
-        const specialFeatures = ['smart-hub', 'guide', 'info', 'tools'];
-        specialFeatures.forEach(feature => {
-            const button = document.querySelector(`[data-action="${feature}"]`);
-            if (button) {
-                button.addEventListener('click', () => this.specialFeature(feature));
-            }
-        });
-
-        // App Control
-        this.apps.forEach(app => {
-            const appButton = document.querySelector(`[data-action="${app.toLowerCase().replace(' ', '-')}"]`);
-            if (appButton) {
-                appButton.addEventListener('click', () => this.launchApp(app));
-            }
-        });
+    addEventListenerSafely(selector, eventType, callback) {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.addEventListener(eventType, callback);
+        } else {
+            console.warn(`Element not found: ${selector}`);
+        }
     }
 
     setupNumericKeypad() {
@@ -89,8 +109,24 @@ class VampireRemote {
         });
     }
 
+    handleKeyboardShortcuts(event) {
+        if (!this.state.power) return;
+
+        switch(event.key) {
+            case 'ArrowUp': this.navigate('up'); break;
+            case 'ArrowDown': this.navigate('down'); break;
+            case 'ArrowLeft': this.navigate('left'); break;
+            case 'ArrowRight': this.navigate('right'); break;
+            case 'Enter': this.navigate('ok'); break;
+            case '+': this.adjustVolume('up'); break;
+            case '-': this.adjustVolume('down'); break;
+            case 'm': this.toggleMute(); break;
+        }
+    }
+
     togglePower() {
         this.state.power = !this.state.power;
+        this.state.connectionStatus = this.state.power ? 'connected' : 'disconnected';
         this.updateUI();
         this.sendCommand('power', this.state.power ? 'on' : 'off');
     }
@@ -99,9 +135,9 @@ class VampireRemote {
         if (!this.state.power) return;
 
         if (direction === 'up') {
-            this.state.volume = Math.min(100, this.state.volume + 5);
+            this.state.volume = Math.min(this.MAX_VOLUME, this.state.volume + 5);
         } else {
-            this.state.volume = Math.max(0, this.state.volume - 5);
+            this.state.volume = Math.max(this.MIN_VOLUME, this.state.volume - 5);
         }
         
         this.state.isMuted = false;
@@ -202,36 +238,104 @@ class VampireRemote {
     }
 
     updateUI() {
-        // Update connection status
-        const statusEl = document.getElementById('connectionStatus');
-        statusEl.innerHTML = this.state.power 
-            ? '<span class="status-dot connected"></span>Connected' 
-            : '<span class="status-dot disconnected"></span>Disconnected';
+        try {
+            // Update connection status
+            const statusEl = document.getElementById('connectionStatus');
+            statusEl.innerHTML = this.state.power 
+                ? '<span class="status-dot connected"></span>Connected' 
+                : '<span class="status-dot disconnected"></span>Disconnected';
 
-        // Update volume display
-        const volumeEl = document.getElementById('volumeLevel');
-        volumeEl.textContent = this.state.isMuted ? 'MUTE' : `${this.state.volume}%`;
+            // Update volume display
+            const volumeEl = document.getElementById('volumeLevel');
+            volumeEl.textContent = this.state.isMuted ? 'MUTE' : `${this.state.volume}%`;
 
-        // Update channel display
-        const channelEl = document.getElementById('currentChannel');
-        channelEl.textContent = `CH ${this.state.currentChannel}`;
+            // Update channel display
+            const channelEl = document.getElementById('currentChannel');
+            channelEl.textContent = `CH ${this.state.currentChannel}`;
 
-        // Update source selection
-        const sourceEl = document.getElementById('sourceInput');
-        sourceEl.value = this.state.currentSource;
+            // Update source selection
+            const sourceEl = document.getElementById('sourceInput');
+            sourceEl.value = this.state.currentSource;
+
+            // Optional: Disable/enable buttons based on power state
+            this.toggleButtonStates();
+        } catch (error) {
+            console.error('Error updating UI:', error);
+            this.showErrorNotification('Failed to update remote display');
+        }
+    }
+
+    toggleButtonStates() {
+        const buttons = document.querySelectorAll('button, select');
+        buttons.forEach(button => {
+            if (button.id !== 'sourceInput' && button.getAttribute('data-action') !== 'power') {
+                button.disabled = !this.state.power;
+            }
+        });
     }
 
     sendCommand(type, value) {
         // Placeholder for actual TV communication logic
         console.log(`Sending Command: ${type} - ${value}`);
         
-        // Here you would implement actual communication with Samsung SmartThings API
-        // This could involve:
-        // - WebSocket communication
-        // - HTTP requests to a local network API
-        // - Integration with Samsung's official API
+        try {
+            // Here you would implement actual communication 
+            // For demo, we'll add a simple notification
+            this.showCommandNotification(type, value);
+        } catch (error) {
+            console.error(`Error sending ${type} command:`, error);
+            this.showErrorNotification(`Failed to send ${type} command`);
+        }
+    }
+
+    showCommandNotification(type, value) {
+        // Create a temporary notification element
+        const notification = document.createElement('div');
+        notification.className = 'command-notification';
+        notification.textContent = `${type.toUpperCase()}: ${value}`;
+        document.body.appendChild(notification);
+
+        // Remove notification after 2 seconds
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 2000);
+    }
+
+    showErrorNotification(message) {
+        // Create a temporary error notification
+        const errorNotification = document.createElement('div');
+        errorNotification.className = 'error-notification';
+        errorNotification.textContent = message;
+        document.body.appendChild(errorNotification);
+
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+            document.body.removeChild(errorNotification);
+        }, 3000);
     }
 }
+
+// Add this to your CSS for notifications
+const notificationStyles = `
+<style>
+.command-notification, .error-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background-color: rgba(0,0,0,0.7);
+    color: white;
+    border-radius: 5px;
+    z-index: 1000;
+}
+
+.error-notification {
+    background-color: rgba(255,0,0,0.7);
+}
+</style>
+`;
+document.head.insertAdjacentHTML('beforeend', notificationStyles);
 
 document.addEventListener('DOMContentLoaded', () => {
     new VampireRemote();
