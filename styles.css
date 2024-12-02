@@ -1,0 +1,293 @@
+:root {
+    --bg-dark: #121212;
+    --bg-remote: #1e1e1e;
+    --text-primary: #e0e0e0;
+    --accent-color: #bb86fc;
+    --secondary-color: #03dac6;
+    --button-hover: rgba(187, 134, 252, 0.2);
+    --button-active: rgba(187, 134, 252, 0.4);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a1a1a 0%, #121212 100%);
+}
+
+.remote-container {
+    perspective: 1000px;
+}
+
+.remote {
+    background-color: var(--bg-remote);
+    border-radius: 20px;
+    padding: 25px;
+    width: 350px;
+    box-shadow: 
+        0 15px 50px rgba(0,0,0,0.3),
+        0 5px 15px rgba(0,0,0,0.2);
+    transform-style: preserve-3d;
+    border: 2px solid rgba(187, 134, 252, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.remote:hover {
+    transform: rotateX(-5deg) rotateY(5deg);
+    box-shadow: 
+        0 20px 60px rgba(0,0,0,0.4),
+        0 8px 20px rgba(0,0,0,0.3);
+}
+
+.remote-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.remote-header h1 {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: var(--accent-color);
+}
+
+.connection-status {
+    display: flex;
+    align-items: center;
+    font-size: 0.8em;
+    color: var(--text-primary);
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-dot.disconnected {
+    background-color: #ff5252;
+}
+
+.status-dot.connected {
+    background-color: var(--secondary-color);
+}
+
+.channel-info {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: var(--secondary-color);
+    background-color: rgba(3, 218, 198, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.control-section {
+    margin-bottom: 20px;
+}
+
+.navigation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nav-center {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.nav-btn {
+    background-color: rgba(255,255,255,0.1);
+    border: none;
+    color: var(--text-primary);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.nav-btn:hover {
+    background-color: var(--button-hover);
+}
+
+.nav-btn:active {
+    background-color: var(--button-active);
+}
+
+.nav-btn.nav-ok {
+    background-color: var(--accent-color);
+    color: var(--bg-dark);
+}
+
+.volume {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.volume-btn {
+    background-color: rgba(255,255,255,0.1);
+    border: none;
+    color: var(--text-primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.volume-indicator {
+    font-size: 1em;
+    color: var(--secondary-color);
+    margin: 0 10px;
+}
+
+.numeric-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.numeric-keypad button {
+    width: 100%;
+    height: 50px;
+    background-color: rgba(255,255,255,0.1);
+    border: none;
+    color: var(--text-primary);
+    border-radius: 10px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.numeric-keypad button:hover {
+    background-color: var(--button-hover);
+}
+
+.media {
+    display: flex;
+    justify-content: space-between;
+}
+
+.media-btn {
+    background-color: rgba(255,255,255,0.1);
+    border: none;
+    color: var(--text-primary);
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.power-sources {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.power-btn {
+    background-color: var(--secondary-color);
+    color: var(--bg-dark);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.source-selector select {
+    background-color: rgba(255,255,255,0.1);
+    color: var(--text-primary);
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    appearance: none;
+    width: 120px;
+}
+
+.quick-access {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.quick-btn {
+    background-color: rgba(255,255,255,0.1);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.special-features, .app-control {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.special-features button, 
+.app-control button {
+    background-color: rgba(255,255,255,0.1);
+    border: none;
+    color: var(--text-primary);
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.special-features button:hover,
+.app-control button:hover {
+    background-color: var(--button-hover);
+}
+
+/* Responsive adjustments */
+@media (max-width: 400px) {
+    .remote {
+        width: 95vw;
+        padding: 15px;
+    }
+
+    .nav-btn {
+        width: 40px;
+        height: 40px;
+    }
+
+    .numeric-keypad button {
+        height: 40px;
+    }
+}

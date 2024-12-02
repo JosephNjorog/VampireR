@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vampire Remote</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧛</text></svg>">
+</head>
+<body>
+    <div class="remote-container">
+        <div class="remote">
+            <div class="remote-header">
+                <h1>Vampire Remote</h1>
+                <div class="connection-status" id="connectionStatus">
+                    <span class="status-dot disconnected"></span>
+                    Disconnected
+                </div>
+            </div>
+
+            <div class="channel-info">
+                <span id="currentChannel">CH 1</span>
+            </div>
+
+            <div class="control-section navigation">
+                <button class="nav-btn nav-up" data-action="up">▲</button>
+                <div class="nav-center">
+                    <button class="nav-btn nav-left" data-action="left">◀</button>
+                    <button class="nav-btn nav-ok" data-action="ok">OK</button>
+                    <button class="nav-btn nav-right" data-action="right">▶</button>
+                </div>
+                <button class="nav-btn nav-down" data-action="down">▼</button>
+            </div>
+
+            <div class="control-section volume">
+                <button class="volume-btn" data-action="volume-down">-</button>
+                <span class="volume-indicator" id="volumeLevel">50%</span>
+                <button class="volume-btn" data-action="volume-up">+</button>
+                <button class="volume-btn mute" data-action="mute">🔇</button>
+            </div>
+
+            <div class="numeric-keypad">
+                <div class="keypad-row">
+                    <button data-action="number-1">1</button>
+                    <button data-action="number-2">2</button>
+                    <button data-action="number-3">3</button>
+                </div>
+                <div class="keypad-row">
+                    <button data-action="number-4">4</button>
+                    <button data-action="number-5">5</button>
+                    <button data-action="number-6">6</button>
+                </div>
+                <div class="keypad-row">
+                    <button data-action="number-7">7</button>
+                    <button data-action="number-8">8</button>
+                    <button data-action="number-9">9</button>
+                </div>
+                <div class="keypad-row">
+                    <button data-action="number-0">0</button>
+                    <button data-action="channel-up">CH▲</button>
+                    <button data-action="channel-down">CH▼</button>
+                </div>
+            </div>
+
+            <div class="control-section media">
+                <button class="media-btn" data-action="rewind">⏪</button>
+                <button class="media-btn" data-action="play-pause">⏯️</button>
+                <button class="media-btn" data-action="stop">⏹️</button>
+                <button class="media-btn" data-action="forward">⏩</button>
+            </div>
+
+            <div class="control-section power-sources">
+                <button class="power-btn" data-action="power">🔌</button>
+                <div class="source-selector">
+                    <select id="sourceInput">
+                        <option value="tv">TV</option>
+                        <option value="hdmi1">HDMI 1</option>
+                        <option value="hdmi2">HDMI 2</option>
+                        <option value="av">AV</option>
+                        <option value="component">Component</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="quick-access">
+                <button class="quick-btn" data-action="home">🏠</button>
+                <button class="quick-btn" data-action="back">↩️</button>
+                <button class="quick-btn" data-action="menu">📋</button>
+                <button class="quick-btn" data-action="settings">⚙️</button>
+            </div>
+
+            <div class="special-features">
+                <button data-action="smart-hub">Smart Hub</button>
+                <button data-action="guide">Guide</button>
+                <button data-action="info">Info</button>
+                <button data-action="tools">Tools</button>
+            </div>
+
+            <div class="app-control">
+                <button data-action="netflix">Netflix</button>
+                <button data-action="prime-video">Prime Video</button>
+                <button data-action="youtube">YouTube</button>
+                <button data-action="disney-plus">Disney+</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
